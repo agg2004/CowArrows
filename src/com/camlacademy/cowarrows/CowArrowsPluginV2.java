@@ -1,6 +1,9 @@
 package com.camlacademy.cowarrows;
 
 import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -16,9 +19,11 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class CowArrowsPluginV2 extends JavaPlugin implements Listener{
+public class CowArrowsPluginV2 extends JavaPlugin implements Listener, CommandExecutor{
 
 	public static final String CONFIG_KEY_ALLOW_COW_ARROW_RECIPE = "allowCowArrowRecipe";
+	
+	private boolean spawnMushroomCows = false;
 	
 	@Override
 	public void onEnable() {
@@ -30,6 +35,13 @@ public class CowArrowsPluginV2 extends JavaPlugin implements Listener{
 		saveConfig();
 		
 		registerRecipes();
+		
+		getCommand("toggleMushroomsCows").setExecutor(this);
+	}
+	
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
+		spawnMushroomCows = !spawnMushroomCows;
+		return true;
 	}
 
 private void registerRecipes() {
@@ -156,6 +168,12 @@ private void registerRecipes() {
 			return;
 		}
 
+		//spawn the cow
+		if(spawnMushroomCows){
+			event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.MUSHROOM_COW);
+		}else{
+			event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.COW);
+		}
 
 		//spawn the cow
 		event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.COW);
